@@ -1,2 +1,2 @@
-# Wheather
-Wheather with openweathermap.org API
+# Weather
+Weather with openweathermap.org API
