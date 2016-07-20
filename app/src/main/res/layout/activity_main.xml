@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.wheather.view.widget.TabletDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+    <include
+        layout="@layout/app_bar_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_content"/>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="@dimen/nav_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:background="@color/colorPrimary"
+        app:headerLayout="@layout/nav_header_main"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:menu="@menu/activity_main_drawer" >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:id="@+id/btNavExitApp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_bt_exit"
+            android:drawableStart="@drawable/ic_exit_to_app"
+            android:drawableLeft="@drawable/ic_exit_to_app"
+            android:drawablePadding="16dp"
+            android:text="@string/exit_to_app"
+            android:textColor="@color/white"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"/>
+    </android.support.design.widget.NavigationView>
+
+</com.example.wheather.view.widget.TabletDrawerLayout>

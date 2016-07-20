@@ -1,0 +1,28 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "com.example.wheather"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+def SUPPORT_VERSION = '22.2.1'
+dependencies {
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:' + SUPPORT_VERSION
+    compile 'com.android.support:support-v4:' + SUPPORT_VERSION
+    compile 'com.android.support:recyclerview-v7:' + SUPPORT_VERSION
+    compile 'com.android.support:design:' + SUPPORT_VERSION
+}

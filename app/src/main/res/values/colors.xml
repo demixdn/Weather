@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#001a19</color>
+    <color name="colorPrimaryDark">#011017</color>
+    <color name="colorAccent">#f29c25</color>
+    <color name="white">#FFFFFF</color>
+    <color name="color1">#ffff88</color>
+    <color name="color1_25">#4Dffff88</color>
+    <color name="color2">#aa6622</color>
+    <color name="color3">#444422</color>
+    <color name="color4">#1a2d1a</color>
+    <color name="color5">#0c9595</color>
+    <color name="color6">#0c6095</color>
+    <color name="color7">#0c5095</color>
+    <color name="color8">#0c9539</color>
+
+    <color name="colorPrimaryVioletDark">#4a299c</color>
+    <color name="colorPrimaryViolet">#5f38ab</color>
+    <color name="colorAccentViolet">#f29c25</color>
+
+    <color name="colorPrimaryBlyDark">#017ac1</color>
+    <color name="colorPrimaryBly">#029fee</color>
+    <color name="colorAccentBly">#f29c25</color>
+
+    <color name="colorPrimaryCyanDark">#1d63d5</color>
+    <color name="colorPrimaryCyan">#1c8cfc</color>
+    <color name="colorAccentCyan">#f29c25</color>
+
+    <color name="colorPrimaryTurquoiseDark">#028693</color>
+    <color name="colorPrimaryTurquoise">#00b5c8</color>
+    <color name="colorAccentTurquoise">#f29c25</color>
+
+    <color name="colorPrimaryYellowDark">#ff9000</color>
+    <color name="colorPrimaryYellow">#f8bd00</color>
+    <color name="colorAccentYellow">#0c5095</color>
+</resources>

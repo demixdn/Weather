@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_day"
+            android:icon="@drawable/ic_filter_drama"
+            android:title="@string/weather_day"/>
+        <item
+            android:id="@+id/nav_week"
+            android:icon="@drawable/ic_view_list"
+            android:title="@string/weather_week"
+            android:checked="true" />
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@drawable/ic_view_headline"
+            android:title="@string/weather_history" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings" />
+    </group>
+
+
+</menu>

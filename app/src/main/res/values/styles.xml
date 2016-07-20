@@ -1,0 +1,51 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.NoActionBar.Violet">
+        <item name="colorPrimary">@color/colorPrimaryViolet</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryVioletDark</item>
+        <item name="colorAccent">@color/colorAccentViolet</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Bly">
+        <item name="colorPrimary">@color/colorPrimaryBly</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryBlyDark</item>
+        <item name="colorAccent">@color/colorAccentBly</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Cyan">
+        <item name="colorPrimary">@color/colorPrimaryCyan</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryCyanDark</item>
+        <item name="colorAccent">@color/colorAccentCyan</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Turquoise">
+        <item name="colorPrimary">@color/colorPrimaryTurquoise</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryTurquoiseDark</item>
+        <item name="colorAccent">@color/colorAccentTurquoise</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.Yellow">
+        <item name="colorPrimary">@color/colorPrimaryYellow</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryYellowDark</item>
+        <item name="colorAccent">@color/colorAccentYellow</item>
+    </style>
+
+
+</resources>
