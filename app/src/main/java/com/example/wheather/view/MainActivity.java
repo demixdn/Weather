@@ -1,10 +1,10 @@
 package com.example.wheather.view;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,12 +28,14 @@ import com.example.wheather.view.widget.TabletDrawerLayout;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private TabletDrawerLayout drawer;
+    private TabletDrawerLayout drawerLayout;
+    private NavigationView navigationView;
     boolean isDrawerLocked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LogUtils.E("OnCreate");
         setTheme();
         setContentView(R.layout.activity_main);
         initUI();
@@ -47,14 +49,27 @@ public class MainActivity extends AppCompatActivity
 
     private void loadInitialFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = null;
-        String tag = getIntent().getStringExtra(AppConst.EXTRA_FRAGMENT_KEY);
+        Fragment fragment;
+        String tag = getFragmentFromPrefs();
         if(tag==null){
             fragment = new WeatherWeekFragment();
         }else {
             switch (tag) {
                 case AppConst.FRAGMENT_DAY:
-                    fragment = new WeatherDayFragment();
+                    fragment = WeatherDayFragment.getInstance(AppConst.THEME_TURQUOISE);
+                    navigationView.getMenu().getItem(0).setChecked(true);
+                    break;
+                case AppConst.FRAGMENT_WEEK:
+                    fragment = new WeatherWeekFragment();
+                    navigationView.getMenu().getItem(1).setChecked(true);
+                    break;
+                case AppConst.FRAGMENT_HISTORY:
+                    fragment = new HistoryFragment();
+                    navigationView.getMenu().getItem(2).setChecked(true);
+                    break;
+                case AppConst.FRAGMENT_SETTINGS:
+                    fragment = new SettingsFragment();
+                    navigationView.getMenu().getItem(3).setChecked(true);
                     break;
                 default:
                     fragment = new WeatherWeekFragment();
@@ -70,19 +85,13 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         initDrawer(toolbar);
-        findViewById(R.id.btNavExitApp).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        findViewById(R.id.btNavExitApp).setOnClickListener(v -> finish());
 
 
     }
 
     private void setTheme(){
-        SharedPreferences preferences = getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE);
-        String theme = preferences.getString(AppConst.THEME_KEY, AppConst.THEME_DEFAULT);
+        String theme = getThemeFromPrefs();
         switch (theme){
             case AppConst.THEME_DEFAULT:
                 setTheme(R.style.AppTheme_NoActionBar);
@@ -107,34 +116,71 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+    /**
+     * Restore theme key from preference
+     * @return theme key, such as {@link AppConst#THEME_DEFAULT} and other
+     */
+    private String getThemeFromPrefs(){
+        return getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE)
+                .getString(AppConst.THEME_KEY, AppConst.THEME_DEFAULT);
+    }
+
+    private String getFragmentFromPrefs(){
+        return getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE)
+                .getString(AppConst.EXTRA_FRAGMENT_KEY, AppConst.FRAGMENT_WEEK);
+    }
+
+    /**
+     * Save theme key for restart activity
+     * @param themeValue theme key. The value must be from
+        {@link AppConst#THEME_DEFAULT}
+        {@link AppConst#THEME_VIOLET}
+        {@link AppConst#THEME_BLY}
+        {@link AppConst#THEME_CYAN}
+        {@link AppConst#THEME_TURQUOISE}
+        {@link AppConst#THEME_YELLOW}
+     */
     private void saveTheme(String themeValue){
         getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE).edit()
                 .putString(AppConst.THEME_KEY, themeValue).apply();
     }
 
+    private void saveFragment(String fragmentValue){
+        getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE).edit()
+                .putString(AppConst.EXTRA_FRAGMENT_KEY, fragmentValue).apply();
+    }
+
     private void initDrawer(Toolbar toolbar) {
-        drawer = (TabletDrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        drawerLayout = (TabletDrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         isDrawerLocked = checkIsTablet();
         if(isDrawerLocked){
-            View mainContent = findViewById(R.id.main_content);
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-            drawer.setScrimColor(Color.TRANSPARENT);
-            drawer.setTablet(true);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            drawerLayout.setScrimColor(Color.TRANSPARENT);
+            drawerLayout.setTablet(true);
             float navWidth = (float) getResources().getDimensionPixelSize(R.dimen.nav_width);
-            mainContent.setX(navWidth);
-            int deviceWidth = getResources().getDisplayMetrics().widthPixels;
-            ViewGroup.LayoutParams layoutParams = mainContent.getLayoutParams();
-            layoutParams.width = deviceWidth - (int) navWidth;
-            mainContent.setLayoutParams(layoutParams);
-            drawer.setDrawerListener(null);
+            offsetTabletViews(navWidth);
+            drawerLayout.setDrawerListener(null);
         }else {
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                    R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            drawer.setDrawerListener(toggle);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawerLayout.setDrawerListener(toggle);
             toggle.syncState();
         }
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void offsetTabletViews(float navWidth) {
+        View mainContent = findViewById(R.id.main_content);
+        mainContent.setX(navWidth);
+        int deviceWidth = getResources().getDisplayMetrics().widthPixels;
+        ViewGroup.LayoutParams layoutParams = mainContent.getLayoutParams();
+        layoutParams.width = deviceWidth - (int) navWidth;
+        mainContent.setLayoutParams(layoutParams);
+        View container = findViewById(R.id.detail_container);
+        CoordinatorLayout.LayoutParams coorparams = (CoordinatorLayout.LayoutParams)container.getLayoutParams();
+        coorparams.width = deviceWidth - (int) navWidth;
+        container.setLayoutParams(coorparams);
     }
 
     private boolean checkIsTablet(){
@@ -149,9 +195,9 @@ public class MainActivity extends AppCompatActivity
     public void onResume(){
         super.onResume();
         if(isDrawerLocked) {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         }else {
-            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
     }
 
@@ -173,30 +219,49 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = null;
         String tag = null;
-        saveTheme(AppConst.THEME_DEFAULT);
         if (id == R.id.nav_day) {
-//            fragment = new WeatherDayFragment();
-//            tag = AppConst.FRAGMENT_DAY;
+            //saveFragment(AppConst.FRAGMENT_DAY);
             saveTheme(AppConst.THEME_CYAN);
-            Intent dayIntent = new Intent(MainActivity.this, MainActivity.class);
-            dayIntent.putExtra(AppConst.EXTRA_FRAGMENT_KEY, AppConst.FRAGMENT_DAY);
-            startActivity(dayIntent);
-            finish();
+            //restartActivity();
+            startActivity(new Intent(MainActivity.this, DetailActivity.class));
             return true;
         } else if (id == R.id.nav_week) {
-            fragment = new WeatherWeekFragment();
-            tag = AppConst.FRAGMENT_WEEK;
+            item.setChecked(true);
+            saveFragment(AppConst.FRAGMENT_WEEK);
+            if(getThemeFromPrefs().compareTo(AppConst.THEME_DEFAULT)==0){
+                fragment = new WeatherWeekFragment();
+                tag = AppConst.FRAGMENT_WEEK;
+            } else {
+                saveTheme(AppConst.THEME_DEFAULT);
+                restartActivity();
+                return true;
+            }
         } else if (id == R.id.nav_history) {
-            fragment = new HistoryFragment();
-            tag = AppConst.FRAGMENT_HISTORY;
+            item.setChecked(true);
+            saveFragment(AppConst.FRAGMENT_HISTORY);
+            if(getThemeFromPrefs().compareTo(AppConst.THEME_DEFAULT)==0){
+                fragment = new HistoryFragment();
+                tag = AppConst.FRAGMENT_HISTORY;
+            } else {
+                saveTheme(AppConst.THEME_DEFAULT);
+                restartActivity();
+                return true;
+            }
         } else if (id == R.id.nav_settings) {
-            fragment = new SettingsFragment();
-            tag = AppConst.FRAGMENT_SETTINGS;
+            item.setChecked(true);
+            saveFragment(AppConst.FRAGMENT_SETTINGS);
+            if(getThemeFromPrefs().compareTo(AppConst.THEME_DEFAULT)==0){
+                fragment = new SettingsFragment();
+                tag = AppConst.FRAGMENT_SETTINGS;
+            } else {
+                saveTheme(AppConst.THEME_DEFAULT);
+                restartActivity();
+                return true;
+            }
         }
 
         fragmentManager.beginTransaction()
@@ -209,4 +274,12 @@ public class MainActivity extends AppCompatActivity
         }
         return true;
     }
+
+    private void restartActivity() {
+        Intent dayIntent = new Intent(MainActivity.this, MainActivity.class);
+        startActivity(dayIntent);
+        finish();
+    }
+
+
 }

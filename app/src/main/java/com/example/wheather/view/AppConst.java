@@ -18,4 +18,6 @@ public class AppConst {
     public static final String THEME_CYAN = "cyan";
     public static final String THEME_TURQUOISE = "turquoise";
     public static final String THEME_YELLOW = "yellow";
+
+    public static final String WEATHER_ICON_PART = "icon_";
 }

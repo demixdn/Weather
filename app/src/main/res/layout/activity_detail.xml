@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.wheather.view.DetailActivity"
+    android:background="@drawable/bg_theme_violet"
+    android:id="@+id/dayContent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/tvDayDetailTitle"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/btBack"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:id="@+id/btBack"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/bg_bt_ab"
+        android:src="@drawable/ic_arrow_back"
+        android:adjustViewBounds="true" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true"
+        android:id="@+id/centerPoint" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ivDayDetailWeather"
+        android:layout_above="@+id/centerPoint"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/icon_04d" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/tvDayDetailCurrentT"
+        android:layout_below="@+id/centerPoint"
+        android:layout_alignRight="@+id/centerPoint"
+        android:layout_alignEnd="@+id/centerPoint"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        android:layout_marginRight="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:id="@+id/tvDayDetailMinT"
+        android:layout_toRightOf="@+id/centerPoint"
+        android:layout_toEndOf="@+id/centerPoint"
+        android:gravity="bottom"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:layout_marginLeft="4dp"
+        android:layout_alignBaseline="@+id/tvDayDetailCurrentT" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tvDayDetailCurrentT"
+        android:id="@+id/llData">
+
+        <TextView
+            android:id="@+id/tvDayDetailEmpty"
+            style="@style/WeatherDataText" />
+
+        <TextView
+            android:id="@+id/tvDayDetailPressure"
+            style="@style/WeatherDataText" />
+
+        <TextView
+            android:id="@+id/tvDayDetailHumidity"
+            style="@style/WeatherDataText" />
+
+        <TextView
+            android:id="@+id/tvDayDetailWindSpeed"
+            style="@style/WeatherDataText" />
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+
+
