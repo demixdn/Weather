@@ -1,8 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId "com.example.wheather"
@@ -17,12 +24,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    applicationVariants.all
+            {
+                variant ->
+                    if (variant.buildType.name.equals("debug") || variant.buildType.name.equals("release")) {
+                        variant.outputs.each
+                                {
+                                    output ->
+                                        def outputFile = output.outputFile
+                                        if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                                            def replace_part = "weather_v" + defaultConfig.versionName
+                                            def fileName = outputFile.name.replace("app", replace_part)
+                                            output.outputFile = new File((String) outputFile.parent, (String) fileName)
+                                        }
+                                }
+                    }
+            }
 }
 def SUPPORT_VERSION = '22.2.1'
 dependencies {
-    testCompile 'junit:junit:4.12'
+    compile project(':data')
     compile 'com.android.support:appcompat-v7:' + SUPPORT_VERSION
     compile 'com.android.support:support-v4:' + SUPPORT_VERSION
     compile 'com.android.support:recyclerview-v7:' + SUPPORT_VERSION
     compile 'com.android.support:design:' + SUPPORT_VERSION
+    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.0.0-RC1'
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta3'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'org.greenrobot:greendao:3.0.1'
 }

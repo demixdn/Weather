@@ -1,4 +1,4 @@
-package com.example.wheather.data;
+package com.example.data;
 
 /**
  * Created by Aleksandr on 20.07.2016 in Wheather.
