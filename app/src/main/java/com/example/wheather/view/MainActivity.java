@@ -1,5 +1,6 @@
 package com.example.wheather.view;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -17,7 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.data.model.dao.WeatherDAO;
+import com.example.data.net.OpenWeatherConnection;
+import com.example.data.repository.WeatherDataRepository;
+import com.example.data.repository.WeatherDataStore;
 import com.example.wheather.R;
+import com.example.wheather.WeatherApp;
 import com.example.wheather.data.LogUtils;
 import com.example.wheather.view.fragments.HistoryFragment;
 import com.example.wheather.view.fragments.SettingsFragment;
@@ -25,12 +31,21 @@ import com.example.wheather.view.fragments.WeatherDayFragment;
 import com.example.wheather.view.fragments.WeatherWeekFragment;
 import com.example.wheather.view.widget.TabletDrawerLayout;
 
+import java.util.List;
+
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TabletDrawerLayout drawerLayout;
     private NavigationView navigationView;
     boolean isDrawerLocked = false;
+
+    ProgressDialog progressDialog;
+    CompositeSubscription subscription = new CompositeSubscription();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +57,96 @@ public class MainActivity extends AppCompatActivity
         initModel();
     }
 
+    @Override
+    public void onDestroy(){
+        if(subscription!=null && !subscription.isUnsubscribed())
+            subscription.unsubscribe();
+        super.onDestroy();
+    }
+
     private void initModel() {
 
         loadInitialFragment();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(true);
+        WeatherDataStore dataStore = new WeatherDataRepository(WeatherApp.getInstance().getDiskDataSource());
+        int start = (int)(System.currentTimeMillis()/1000L) - 2 * 86400;
+        int end = (int)(System.currentTimeMillis()/1000L) + 3 * 86400;
+        //initLoad(dataStore);
+        loadFromApi(dataStore);
+        //testloadall(dataStore);
+    }
+
+    private void loadFromApi(WeatherDataStore dataStore) {
+        progressDialog.show();
+        OpenWeatherConnection connection = new OpenWeatherConnection(WeatherApp.getInstance().getDiskDataSource());
+        subscription.add(connection.forecastByCityId(String.valueOf(704147))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Boolean>() {
+                    @Override
+                    public void onCompleted() {
+                        testloadall(dataStore);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        LogUtils.E("--==WEATHER ERROR==--");
+                        progressDialog.hide();
+                    }
+
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        LogUtils.E("--==WEATHER LOADED==--");
+                    }
+                }));
+//        subscription.add(connection.forecastByCityId(String.valueOf(704147))
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Subscriber<Boolean>() {
+//                    @Override
+//                    public void onCompleted() {
+//                        testloadall(dataStore);
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        e.printStackTrace();
+//                        LogUtils.E("--==WEATHER ERROR==--");
+//                    }
+//
+//                    @Override
+//                    public void onNext(Boolean aBoolean) {
+//                        LogUtils.E("--==WEATHER LOADED==--");
+//                    }
+//                }));
+    }
+
+    private void initLoad(WeatherDataStore dataStore) {
+
+    }
+
+    private void testloadall(WeatherDataStore dataStore) {
+        subscription.add(dataStore.getAllWeathers()
+                .subscribe(new Subscriber<List<WeatherDAO>>() {
+            @Override
+            public void onCompleted() {
+                progressDialog.hide();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                progressDialog.hide();
+            }
+
+            @Override
+            public void onNext(List<WeatherDAO> weathers) {
+                LogUtils.E("WEATHERS!! "+weathers.size());
+                LogUtils.E(weathers.toString());
+            }
+        }));
     }
 
     private void loadInitialFragment() {

@@ -1,9 +1,9 @@
 package com.example.data.model.dao;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
-import com.example.data.model.dto.CityDTO;
-import com.example.data.model.dto.WeatherItemDTO;
+import com.example.data.repository.local.database.DBConst;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -61,33 +61,6 @@ public class WeatherDAO {
     private double windDeg;
 
     public WeatherDAO() {
-    }
-
-    public WeatherDAO(@NonNull CityDTO city, @NonNull WeatherItemDTO item){
-        this.cityId = city.getId();
-        if(city.getCoord()!=null) {
-            this.coordLat = city.getCoord().getLat();
-            this.coordLon = city.getCoord().getLon();
-        }
-        this.dt = item.getDt();
-        if(item.getMain()!=null) {
-            this.temp = item.getMain().getTemp();
-            this.tempMin = item.getMain().getTempMin();
-            this.tempMax = item.getMain().getTempMax();
-            this.pressure = item.getMain().getPressure();
-            this.seaLevel = item.getMain().getSeaLevel();
-            this.grndLevel = item.getMain().getGrndLevel();
-            this.humidity = item.getMain().getHumidity();
-            this.tempKf = item.getMain().getTempKf();
-        }
-        if(item.getWeather()!=null && item.getWeather().get(0)!=null)
-            this.conditionId = item.getWeather().get(0).getId();
-        if(item.getClouds()!=null)
-            this.cloudsAll = item.getClouds().getAll();
-        if(item.getWind()!=null) {
-            this.windSpeed = item.getWind().getSpeed();
-            this.windDeg = item.getWind().getDeg();
-        }
     }
 
     public int getCityId() {
@@ -216,6 +189,27 @@ public class WeatherDAO {
 
     public void setWindDeg(double windDeg) {
         this.windDeg = windDeg;
+    }
+
+    @SuppressLint("DefaultLocale")
+    @NonNull
+    public String insertString(){
+        return String.format(DBConst.QUERY.INSERT_WEATHER, getCityId(),
+                String.valueOf(getCoordLon()).replace(",","."),
+                String.valueOf(getCoordLat()).replace(",","."),
+                getDt(),
+                String.valueOf(getTemp()).replace(",","."),
+                String.valueOf(getTempMin()).replace(",","."),
+                String.valueOf(getTempMax()).replace(",","."),
+                String.valueOf(getPressure()).replace(",","."),
+                String.valueOf(getSeaLevel()).replace(",","."),
+                String.valueOf(getGrndLevel()).replace(",","."),
+                getHumidity(),
+                String.valueOf(getTempKf()).replace(",","."),
+                getConditionId(),
+                getCloudsAll(),
+                String.valueOf(getWindSpeed()).replace(",","."),
+                String.valueOf(getWindDeg()).replace(",","."));
     }
 
     @Override
