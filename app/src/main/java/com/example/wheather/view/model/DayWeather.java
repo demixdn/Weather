@@ -16,7 +16,11 @@ public class DayWeather {
     @Expose
     private long date; //in seconds
 
-    @SerializedName("id")
+    @SerializedName("desc")
+    @Expose
+    private String conditionDesc;
+
+    @SerializedName("con_id")
     @Expose
     private int conditionId;
 
@@ -52,9 +56,10 @@ public class DayWeather {
     public DayWeather() {
     }
 
-    public DayWeather(long date, int conditionId, double temp, double tempMin, double tempMax,
-                      double windSpeed, int pressure, int humidity, String icon) {
+    public DayWeather(long date, String conditionDesc, int conditionId, double temp, double tempMin, double tempMax,
+                      double windSpeed, double pressure, int humidity, String icon) {
         this.date = date;
+        this.conditionDesc = conditionDesc;
         this.conditionId = conditionId;
         this.temp = temp;
         this.tempMin = tempMin;
@@ -70,13 +75,27 @@ public class DayWeather {
     }
 
     public String getDateStr(){
-        long millis = date*1000L;
+        long millis = date * 1000L;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMMM", Locale.getDefault());
+        return simpleDateFormat.format(new Date(millis));
+    }
+
+    public String getDateString(){
+        long millis = date * 1000L;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, dd MMMM", Locale.getDefault());
         return simpleDateFormat.format(new Date(millis));
     }
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public String getConditionDesc() {
+        return conditionDesc;
+    }
+
+    public void setConditionDesc(String conditionDesc) {
+        this.conditionDesc = conditionDesc;
     }
 
     public int getConditionId() {
@@ -123,7 +142,7 @@ public class DayWeather {
         return ConvertUnits.hPa_to_mm(pressure);
     }
 
-    public void setPressure(int pressure) {
+    public void setPressure(double pressure) {
         this.pressure = pressure;
     }
 
@@ -141,5 +160,40 @@ public class DayWeather {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DayWeather that = (DayWeather) o;
+
+        if (date != that.date) return false;
+        return conditionDesc.equals(that.conditionDesc);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (date ^ (date >>> 32));
+        result = 31 * result + conditionDesc.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DayWeather{");
+        sb.append("date=").append(date);
+        sb.append(", desc='").append(conditionDesc).append('\'');
+        sb.append(", temp=").append(temp);
+        sb.append(", tempMin=").append(tempMin);
+        sb.append(", tempMax=").append(tempMax);
+        sb.append(", pressure=").append(pressure);
+        sb.append(", humidity=").append(humidity);
+        sb.append(", icon='").append(icon).append('\'');
+        sb.append(", windSpeed=").append(windSpeed);
+        sb.append('}');
+        return sb.toString();
     }
 }

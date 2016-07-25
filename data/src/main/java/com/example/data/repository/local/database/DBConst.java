@@ -54,6 +54,7 @@ public class DBConst {
         public static final String CITY_NAME = "city_name";
         public static final String COND_DESC = "desc";
         public static final String COND_ICON = "icon";
+        public static final String COND_ID = "con_id";
     }
 
     public static final class QUERY {

@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#011017</color>
     <color name="colorAccent">#f29c25</color>
     <color name="white">#ffffff</color>
+    <color name="default_bg">#313131</color>
+    <color name="default_item_bg">#212121</color>
+    <color name="default_item_text">#f0f0f0</color>
     <color name="color1">#ffff88</color>
     <color name="color1_25">#4Dffff88</color>
     <color name="color2">#aa6622</color>
@@ -13,6 +16,7 @@
     <color name="color6">#0c6095</color>
     <color name="color7">#0c5095</color>
     <color name="color8">#0c9539</color>
+    <color name="color8_25">#4D0c9539</color>
 
     <color name="colorPrimaryVioletDark">#4a299c</color>
     <color name="colorPrimaryViolet">#5f38ab</color>
@@ -33,4 +37,5 @@
     <color name="colorPrimaryYellowDark">#ff9000</color>
     <color name="colorPrimaryYellow">#f8bd00</color>
     <color name="colorAccentYellow">#0c5095</color>
+    <color name="transparent">#00000000</color>
 </resources>

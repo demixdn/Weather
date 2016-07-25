@@ -1,4 +1,4 @@
-package com.example.wheather.data;
+package com.example.wheather.data.utils;
 
 
 import com.example.wheather.BuildConfig;

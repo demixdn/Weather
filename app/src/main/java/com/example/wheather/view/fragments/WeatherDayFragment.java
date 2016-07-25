@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.wheather.R;
-import com.example.wheather.data.LogUtils;
+import com.example.wheather.data.utils.LogUtils;
 import com.example.wheather.view.AppConst;
 
 /**

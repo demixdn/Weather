@@ -5,6 +5,9 @@ package com.example.wheather.view;
  */
 public class AppConst {
     public static final String EXTRA_FRAGMENT_KEY = "extra_fragment";
+    public static final String EXTRA_DAY_KEY = "extra_day_data";
+    public static final String EXTRA_PERIOD_KEY = "extra_period_data";
+
     public static final String FRAGMENT_WEEK = "fragment_week";
     public static final String FRAGMENT_DAY = "fragment_day";
     public static final String FRAGMENT_HISTORY = "fragment_history";
@@ -20,4 +23,6 @@ public class AppConst {
     public static final String THEME_YELLOW = "yellow";
 
     public static final String WEATHER_ICON_PART = "icon_";
+
+    public static final int SECONDS_IN_DAY = 24 * 60 * 60;
 }

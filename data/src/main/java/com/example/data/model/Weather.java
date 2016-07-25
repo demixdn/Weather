@@ -16,9 +16,17 @@ public class Weather {
     @Expose
     private String desc;
 
-    @SerializedName(DBConst.AS.COND_ICON)
+    @SerializedName(DBConst.CONDITION_COLUMN.DAY_ICON)
     @Expose
-    private String icon;
+    private String day_icon;
+
+    @SerializedName(DBConst.CONDITION_COLUMN.NIGHT_ICON)
+    @Expose
+    private String night_icon;
+
+    @SerializedName(DBConst.AS.COND_ID)
+    @Expose
+    private int conditionId;
 
     @SerializedName(DBConst.WEATHER_COLUMN.CITY_ID)
     @Expose
@@ -79,12 +87,28 @@ public class Weather {
         this.desc = desc;
     }
 
-    public String getIcon() {
-        return icon;
+    public String getDayIcon() {
+        return day_icon;
     }
 
-    public void setIcon(String icon) {
-        this.icon = icon;
+    public void setDayIcon(String day_icon) {
+        this.day_icon = day_icon;
+    }
+
+    public String getNightIcon() {
+        return night_icon;
+    }
+
+    public void setNightIcon(String night_icon) {
+        this.night_icon = night_icon;
+    }
+
+    public int getConditionId() {
+        return conditionId;
+    }
+
+    public void setConditionId(int conditionId) {
+        this.conditionId = conditionId;
     }
 
     public int getCityId() {
@@ -195,7 +219,8 @@ public class Weather {
         final StringBuilder sb = new StringBuilder("Weather{");
         sb.append("cityName='").append(cityName).append('\'');
         sb.append(", desc='").append(desc).append('\'');
-        sb.append(", icon='").append(icon).append('\'');
+        sb.append(", d_icon='").append(day_icon).append('\'');
+        sb.append(", n_icon='").append(night_icon).append('\'');
         sb.append(", date=").append(date);
         sb.append(", temp=").append(temp);
         sb.append(", tempMin=").append(tempMin);

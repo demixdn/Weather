@@ -2,18 +2,15 @@ package com.example.wheather.view;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.data.TempData;
 import com.example.wheather.R;
+import com.example.wheather.data.mapper.DataConst;
 import com.example.wheather.view.model.DayWeather;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
@@ -23,13 +20,17 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setTheme();
+        setTheme();
         setContentView(R.layout.activity_detail);
         findViewById(R.id.btBack).setOnClickListener(v -> finish());
-        Type listType = new TypeToken<ArrayList<DayWeather>>(){}.getType();
-        ArrayList<DayWeather> weathers = new Gson().fromJson(TempData.TEST_DATA_WEATHER, listType);
-        if(weathers!=null && weathers.size()>0)
-            dayItem = weathers.get(1);
+        String data = getIntent().getStringExtra(AppConst.EXTRA_DAY_KEY);
+        if(data==null)
+            finish();
+        dayItem = new Gson().fromJson(data, DayWeather.class);
+        if(dayItem==null)
+            finish();
+        View content = findViewById(R.id.dayContent);
+        content.setBackgroundResource(DataConst.Theme.getPrimary(dayItem.getConditionId()));
         showWeatherData(dayItem);
     }
 
@@ -52,17 +53,6 @@ public class DetailActivity extends AppCompatActivity {
         if(imageId==0) imageId=R.drawable.icon_50d;
         ImageView image = (ImageView)findViewById(R.id.ivDayDetailWeather);
         image.setImageResource(imageId);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == android.R.id.home) {
-            onBackPressed();
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**

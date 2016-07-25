@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.example.data.model.Weather;
 import com.example.data.model.WeatherMapper;
+import com.example.data.model.dao.CityDAO;
 import com.example.data.model.dao.WeatherDAO;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class DiskDataSource {
 
     @NonNull
     public List<Weather> selectWeatherItemsBy(int cityId, int startPeriod, int endPeriod,
-                                                 boolean useRu, boolean useNightIcon, int limit){
+                                                 boolean useRu, int limit){
         String table = DBConst.TABLE.WEATHERS + " " +
                 "INNER JOIN " + DBConst.TABLE.CITIES + " ON " +
                 DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.CITY_ID + " = " + DBConst.TABLE.CITIES + "." + DBConst.CITY_COLUMN.ID + " " +
@@ -94,7 +95,9 @@ public class DiskDataSource {
                 DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.CONDITION_ID + " = " + DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.ID;
         String columns[] = { DBConst.TABLE.CITIES + "." + DBConst.CITY_COLUMN.NAME + " AS " + DBConst.AS.CITY_NAME,
                 DBConst.TABLE.CONDITIONS + "." + (useRu ? DBConst.CONDITION_COLUMN.DESC_RU : DBConst.CONDITION_COLUMN.DESC_EN) + " AS " + DBConst.AS.COND_DESC,
-                DBConst.TABLE.CONDITIONS + "." + (useNightIcon ? DBConst.CONDITION_COLUMN.NIGHT_ICON : DBConst.CONDITION_COLUMN.DAY_ICON) + " AS " + DBConst.AS.COND_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.DAY_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.NIGHT_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.ID + " AS " +  DBConst.AS.COND_ID,
                 DBConst.WEATHER_COLUMN.CITY_ID,
                 DBConst.WEATHER_COLUMN.DATE,
                 DBConst.WEATHER_COLUMN.TEMP,
@@ -107,14 +110,17 @@ public class DiskDataSource {
                 " AND " + DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " > ?" +
                 " AND " + DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " < ?";
         String[] selectionArgs = {String.valueOf(cityId), String.valueOf(startPeriod), String.valueOf(endPeriod)};
-        String orderBy = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " DESC";
-        String qlimit = String.valueOf((limit <= 0 ? 10 : limit));
+        String orderBy = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " ASC";
+        String qlimit = limit <= 0 ? null : String.valueOf(limit);
         Cursor cursor = database.query(table, columns, selection, selectionArgs, null, null, orderBy, qlimit);
         List<Weather> results = new ArrayList<>();
         if(cursor!=null){
             if(cursor.moveToFirst()){
-                Weather item = WeatherMapper.transform(cursor);
-                results.add(item);
+                while (!cursor.isAfterLast()) {
+                    Weather item = WeatherMapper.transform(cursor);
+                    results.add(item);
+                    cursor.moveToNext();
+                }
             }
             cursor.close();
         }
@@ -122,8 +128,8 @@ public class DiskDataSource {
     }
 
     @NonNull
-    public List<Weather> selectWeatherItemsBy(int lon, int lat, int startPeriod, int endPeriod,
-                                              boolean useRu, boolean useNightIcon, int limit){
+    public List<Weather> selectWeatherItemsBy(double lon, double lat, int startPeriod, int endPeriod,
+                                              boolean useRu, int limit){
         String table = DBConst.TABLE.WEATHERS + " " +
                 "INNER JOIN " + DBConst.TABLE.CITIES + " ON " +
                 DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.CITY_ID + " = " + DBConst.TABLE.CITIES + "." + DBConst.CITY_COLUMN.ID + " " +
@@ -131,7 +137,9 @@ public class DiskDataSource {
                 DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.CONDITION_ID + " = " + DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.ID;
         String columns[] = { DBConst.TABLE.CITIES + "." + DBConst.CITY_COLUMN.NAME + " AS " + DBConst.AS.CITY_NAME,
                 DBConst.TABLE.CONDITIONS + "." + (useRu ? DBConst.CONDITION_COLUMN.DESC_RU : DBConst.CONDITION_COLUMN.DESC_EN) + " AS " + DBConst.AS.COND_DESC,
-                DBConst.TABLE.CONDITIONS + "." + (useNightIcon ? DBConst.CONDITION_COLUMN.NIGHT_ICON : DBConst.CONDITION_COLUMN.DAY_ICON) + " AS " + DBConst.AS.COND_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.DAY_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.NIGHT_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.ID + " AS " +  DBConst.AS.COND_ID,
                 DBConst.WEATHER_COLUMN.CITY_ID,
                 DBConst.WEATHER_COLUMN.LON,
                 DBConst.WEATHER_COLUMN.LAT,
@@ -147,14 +155,17 @@ public class DiskDataSource {
                 " AND " + DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " > ?" +
                 " AND " + DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " < ?";
         String[] selectionArgs = {String.valueOf(lon), String.valueOf(lat), String.valueOf(startPeriod), String.valueOf(endPeriod)};
-        String orderBy = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " DESC";
-        String qlimit = String.valueOf((limit <= 0 ? 10 : limit));
+        String orderBy = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " ASC";
+        String qlimit = limit <= 0 ? null : String.valueOf(limit);
         Cursor cursor = database.query(table, columns, selection, selectionArgs, null, null, orderBy, qlimit);
         List<Weather> results = new ArrayList<>();
         if(cursor!=null){
             if(cursor.moveToFirst()){
-                Weather item = WeatherMapper.transform(cursor);
-                results.add(item);
+                while (!cursor.isAfterLast()) {
+                    Weather item = WeatherMapper.transform(cursor);
+                    results.add(item);
+                    cursor.moveToNext();
+                }
             }
             cursor.close();
         }
@@ -170,7 +181,9 @@ public class DiskDataSource {
                 DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.CONDITION_ID + " = " + DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.ID;
         String columns[] = { DBConst.TABLE.CITIES + "." + DBConst.CITY_COLUMN.NAME + " AS " + DBConst.AS.CITY_NAME,
                 DBConst.TABLE.CONDITIONS + "." + (useRu ? DBConst.CONDITION_COLUMN.DESC_RU : DBConst.CONDITION_COLUMN.DESC_EN) + " AS " + DBConst.AS.COND_DESC,
-                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.DAY_ICON + " AS " + DBConst.AS.COND_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.DAY_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.NIGHT_ICON,
+                DBConst.TABLE.CONDITIONS + "." + DBConst.CONDITION_COLUMN.ID + " AS " +  DBConst.AS.COND_ID,
                 DBConst.WEATHER_COLUMN.CITY_ID,
                 DBConst.WEATHER_COLUMN.LON,
                 DBConst.WEATHER_COLUMN.LAT,
@@ -181,14 +194,21 @@ public class DiskDataSource {
                 DBConst.WEATHER_COLUMN.PRESSURE,
                 DBConst.WEATHER_COLUMN.HUMIDITY,
                 DBConst.WEATHER_COLUMN.WIND_SPEED };
+        String where = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " < ?";
+        String[] args = new String[]{String.valueOf(System.currentTimeMillis()/1000L)};
         String orderBy = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " DESC";
+        offset = offset < 0 ? 0 : offset;
+        limit = limit <= 0 ? 100 : limit;
         String qlimit = String.valueOf(offset+","+limit);
-        Cursor cursor = database.query(table, columns, null, null, null, null, orderBy, qlimit);
+        Cursor cursor = database.query(table, columns, where, args, null, null, orderBy, qlimit);
         List<Weather> results = new ArrayList<>();
         if(cursor!=null){
             if(cursor.moveToFirst()){
-                Weather item = WeatherMapper.transform(cursor);
-                results.add(item);
+                while (!cursor.isAfterLast()) {
+                    Weather item = WeatherMapper.transform(cursor);
+                    results.add(item);
+                    cursor.moveToNext();
+                }
             }
             cursor.close();
         }
@@ -214,15 +234,13 @@ public class DiskDataSource {
     }
 
     @NonNull
-    public List<WeatherDAO> getAll(String offset, String limit){
-        String orderBy = DBConst.TABLE.WEATHERS + "." + DBConst.WEATHER_COLUMN.DATE + " DESC";
-        String lititWithOffset = offset+","+limit;
-        Cursor cursor = database.query(DBConst.TABLE.WEATHERS, null, null, null, null, null, orderBy, lititWithOffset);
-        List<WeatherDAO> results = new ArrayList<>();
+    public List<CityDAO> getAllCities(){
+        Cursor cursor = database.query(DBConst.TABLE.CITIES, null, null, null, null, null, null, null);
+        List<CityDAO> results = new ArrayList<>();
         if(cursor!=null){
             if(cursor.moveToFirst()){
                 while (!cursor.isAfterLast()) {
-                    WeatherDAO item = WeatherMapper.transformDAO(cursor);
+                    CityDAO item = WeatherMapper.transformToCity(cursor);
                     results.add(item);
                     cursor.moveToNext();
                 }

@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.wheather.view.DetailActivity"
-    android:background="@drawable/bg_theme_violet"
     android:id="@+id/dayContent">
 
     <TextView
@@ -21,7 +20,7 @@
         android:layout_alignParentStart="true"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="18sp" />
 
     <ImageButton
         android:layout_width="?attr/actionBarSize"

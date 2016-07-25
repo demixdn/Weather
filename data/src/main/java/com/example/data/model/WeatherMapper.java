@@ -3,6 +3,7 @@ package com.example.data.model;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.example.data.model.dao.CityDAO;
 import com.example.data.model.dao.WeatherDAO;
 import com.example.data.model.dto.CityDTO;
 import com.example.data.model.dto.ForecastResponse;
@@ -98,7 +99,9 @@ public class WeatherMapper {
         result.setCityId(cursor.getInt(cursor.getColumnIndex(DBConst.WEATHER_COLUMN.CITY_ID)));
         result.setCityName(cursor.getString(cursor.getColumnIndex(DBConst.AS.CITY_NAME)));
         result.setDesc(cursor.getString(cursor.getColumnIndex(DBConst.AS.COND_DESC)));
-        result.setIcon(cursor.getString(cursor.getColumnIndex(DBConst.AS.COND_ICON)));
+        result.setDayIcon(cursor.getString(cursor.getColumnIndex(DBConst.CONDITION_COLUMN.DAY_ICON)));
+        result.setNightIcon(cursor.getString(cursor.getColumnIndex(DBConst.CONDITION_COLUMN.NIGHT_ICON)));
+        result.setConditionId(cursor.getInt(cursor.getColumnIndex(DBConst.AS.COND_ID)));
         int latIndex = cursor.getColumnIndex(DBConst.WEATHER_COLUMN.LAT);
         if(latIndex>=0)
             result.setLat(cursor.getDouble(latIndex));
@@ -128,5 +131,12 @@ public class WeatherMapper {
         result.setWindSpeed(cursor.getDouble(cursor.getColumnIndex(DBConst.WEATHER_COLUMN.WIND_SPEED)));
         result.setConditionId(cursor.getInt(cursor.getColumnIndex(DBConst.WEATHER_COLUMN.CONDITION_ID)));
         return result;
+    }
+
+    public static CityDAO transformToCity(@NonNull Cursor cursor){
+        CityDAO city = new CityDAO();
+        city.setId(cursor.getInt(cursor.getColumnIndex(DBConst.CITY_COLUMN.ID)));
+        city.setName(cursor.getString(cursor.getColumnIndex(DBConst.CITY_COLUMN.NAME)));
+        return city;
     }
 }

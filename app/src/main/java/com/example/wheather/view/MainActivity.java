@@ -1,6 +1,7 @@
 package com.example.wheather.view;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -18,23 +19,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.data.model.dao.WeatherDAO;
-import com.example.data.net.OpenWeatherConnection;
-import com.example.data.repository.WeatherDataRepository;
-import com.example.data.repository.WeatherDataStore;
 import com.example.wheather.R;
-import com.example.wheather.WeatherApp;
-import com.example.wheather.data.LogUtils;
+import com.example.wheather.data.AppSettings;
+import com.example.wheather.data.mapper.DataConst;
+import com.example.wheather.data.DataManager;
+import com.example.wheather.data.gps.GPSTracker;
+import com.example.wheather.data.utils.LogUtils;
+import com.example.wheather.data.utils.Message;
 import com.example.wheather.view.fragments.HistoryFragment;
-import com.example.wheather.view.fragments.SettingsFragment;
-import com.example.wheather.view.fragments.WeatherDayFragment;
 import com.example.wheather.view.fragments.WeatherWeekFragment;
 import com.example.wheather.view.widget.TabletDrawerLayout;
+import com.google.gson.Gson;
 
-import java.util.List;
-
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends AppCompatActivity
@@ -44,140 +40,53 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     boolean isDrawerLocked = false;
 
+
     ProgressDialog progressDialog;
     CompositeSubscription subscription = new CompositeSubscription();
+    GPSTracker gpsTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogUtils.E("OnCreate");
-        setTheme();
         setContentView(R.layout.activity_main);
+        initGPS();
         initUI();
         initModel();
+    }
+
+    private void initGPS() {
+        gpsTracker = new GPSTracker(MainActivity.this);
+        if(gpsTracker.canGetLocation()){
+            double latitude = gpsTracker.getLatitude();
+            double longitude = gpsTracker.getLongitude();
+            AppSettings.setCoordLon(longitude);
+            AppSettings.setCoordLat(latitude);
+            LogUtils.E("Coords lat:"+latitude+"; lon"+longitude);
+            gpsTracker.stopUsingGPS();
+        }else{
+            gpsTracker.showSettingsAlert();
+        }
     }
 
     @Override
     public void onDestroy(){
         if(subscription!=null && !subscription.isUnsubscribed())
             subscription.unsubscribe();
+        if(gpsTracker!=null)
+            gpsTracker.stopUsingGPS();
         super.onDestroy();
     }
 
     private void initModel() {
-
         loadInitialFragment();
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Loading...");
-        progressDialog.setCancelable(true);
-        WeatherDataStore dataStore = new WeatherDataRepository(WeatherApp.getInstance().getDiskDataSource());
-        int start = (int)(System.currentTimeMillis()/1000L) - 2 * 86400;
-        int end = (int)(System.currentTimeMillis()/1000L) + 3 * 86400;
-        //initLoad(dataStore);
-        loadFromApi(dataStore);
-        //testloadall(dataStore);
-    }
-
-    private void loadFromApi(WeatherDataStore dataStore) {
-        progressDialog.show();
-        OpenWeatherConnection connection = new OpenWeatherConnection(WeatherApp.getInstance().getDiskDataSource());
-        subscription.add(connection.forecastByCityId(String.valueOf(704147))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Boolean>() {
-                    @Override
-                    public void onCompleted() {
-                        testloadall(dataStore);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        LogUtils.E("--==WEATHER ERROR==--");
-                        progressDialog.hide();
-                    }
-
-                    @Override
-                    public void onNext(Boolean aBoolean) {
-                        LogUtils.E("--==WEATHER LOADED==--");
-                    }
-                }));
-//        subscription.add(connection.forecastByCityId(String.valueOf(704147))
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Subscriber<Boolean>() {
-//                    @Override
-//                    public void onCompleted() {
-//                        testloadall(dataStore);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        e.printStackTrace();
-//                        LogUtils.E("--==WEATHER ERROR==--");
-//                    }
-//
-//                    @Override
-//                    public void onNext(Boolean aBoolean) {
-//                        LogUtils.E("--==WEATHER LOADED==--");
-//                    }
-//                }));
-    }
-
-    private void initLoad(WeatherDataStore dataStore) {
-
-    }
-
-    private void testloadall(WeatherDataStore dataStore) {
-        subscription.add(dataStore.getAllWeathers()
-                .subscribe(new Subscriber<List<WeatherDAO>>() {
-            @Override
-            public void onCompleted() {
-                progressDialog.hide();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-                progressDialog.hide();
-            }
-
-            @Override
-            public void onNext(List<WeatherDAO> weathers) {
-                LogUtils.E("WEATHERS!! "+weathers.size());
-                LogUtils.E(weathers.toString());
-            }
-        }));
     }
 
     private void loadInitialFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment;
-        String tag = getFragmentFromPrefs();
-        if(tag==null){
-            fragment = new WeatherWeekFragment();
-        }else {
-            switch (tag) {
-                case AppConst.FRAGMENT_DAY:
-                    fragment = WeatherDayFragment.getInstance(AppConst.THEME_TURQUOISE);
-                    navigationView.getMenu().getItem(0).setChecked(true);
-                    break;
-                case AppConst.FRAGMENT_WEEK:
-                    fragment = new WeatherWeekFragment();
-                    navigationView.getMenu().getItem(1).setChecked(true);
-                    break;
-                case AppConst.FRAGMENT_HISTORY:
-                    fragment = new HistoryFragment();
-                    navigationView.getMenu().getItem(2).setChecked(true);
-                    break;
-                case AppConst.FRAGMENT_SETTINGS:
-                    fragment = new SettingsFragment();
-                    navigationView.getMenu().getItem(3).setChecked(true);
-                    break;
-                default:
-                    fragment = new WeatherWeekFragment();
-                    break;
-            }
-        }
+        fragment = new WeatherWeekFragment();
+        navigationView.getMenu().getItem(1).setChecked(true);
+        String tag = AppConst.FRAGMENT_WEEK;
         fragmentManager.beginTransaction()
                 .add(R.id.detail_container, fragment, tag)
                 .commit();
@@ -188,64 +97,11 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         initDrawer(toolbar);
         findViewById(R.id.btNavExitApp).setOnClickListener(v -> finish());
-
-
-    }
-
-    private void setTheme(){
-        String theme = getThemeFromPrefs();
-        switch (theme){
-            case AppConst.THEME_DEFAULT:
-                setTheme(R.style.AppTheme_NoActionBar);
-                break;
-            case AppConst.THEME_VIOLET:
-                setTheme(R.style.AppTheme_NoActionBar_Violet);
-                break;
-            case AppConst.THEME_BLY:
-                setTheme(R.style.AppTheme_NoActionBar_Bly);
-                break;
-            case AppConst.THEME_CYAN:
-                setTheme(R.style.AppTheme_NoActionBar_Cyan);
-                break;
-            case AppConst.THEME_TURQUOISE:
-                setTheme(R.style.AppTheme_NoActionBar_Turquoise);
-                break;
-            case AppConst.THEME_YELLOW:
-                setTheme(R.style.AppTheme_NoActionBar_Yellow);
-                break;
-            default:
-                setTheme(R.style.AppTheme_NoActionBar);
-                break;
-        }
-    }
-
-    /**
-     * Restore theme key from preference
-     * @return theme key, such as {@link AppConst#THEME_DEFAULT} and other
-     */
-    private String getThemeFromPrefs(){
-        return getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE)
-                .getString(AppConst.THEME_KEY, AppConst.THEME_DEFAULT);
     }
 
     private String getFragmentFromPrefs(){
         return getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE)
                 .getString(AppConst.EXTRA_FRAGMENT_KEY, AppConst.FRAGMENT_WEEK);
-    }
-
-    /**
-     * Save theme key for restart activity
-     * @param themeValue theme key. The value must be from
-        {@link AppConst#THEME_DEFAULT}
-        {@link AppConst#THEME_VIOLET}
-        {@link AppConst#THEME_BLY}
-        {@link AppConst#THEME_CYAN}
-        {@link AppConst#THEME_TURQUOISE}
-        {@link AppConst#THEME_YELLOW}
-     */
-    private void saveTheme(String themeValue){
-        getSharedPreferences(AppConst.THEME_PREFERENCE, MODE_PRIVATE).edit()
-                .putString(AppConst.THEME_KEY, themeValue).apply();
     }
 
     private void saveFragment(String fragmentValue){
@@ -307,13 +163,21 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         LogUtils.E("onBackPressed");
         if(isDrawerLocked){
-            super.onBackPressed();
+            if(AppSettings.isShowOnExit()){
+                Message.AlertClose(this).show();
+            }else {
+                super.onBackPressed();
+            }
         } else {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawer(GravityCompat.START);
             } else {
-                super.onBackPressed();
+                if(AppSettings.isShowOnExit()){
+                    Message.AlertClose(this).show();
+                }else {
+                    super.onBackPressed();
+                }
             }
         }
     }
@@ -326,62 +190,36 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         String tag = null;
         if (id == R.id.nav_day) {
-            //saveFragment(AppConst.FRAGMENT_DAY);
-            saveTheme(AppConst.THEME_CYAN);
-            //restartActivity();
-            startActivity(new Intent(MainActivity.this, DetailActivity.class));
+            if(DataManager.getInstance().getFirstDay()!=null) {
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                String data = new Gson().toJson(DataManager.getInstance().getFirstDay());
+                intent.putExtra(AppConst.EXTRA_DAY_KEY, data);
+                getSharedPreferences(AppConst.THEME_PREFERENCE, Context.MODE_PRIVATE).edit().putString(AppConst.THEME_KEY, DataConst.Theme.getThemeBy(DataManager.getInstance().getFirstDay().getConditionId())).apply();
+                startActivity(intent);
+            }
             return true;
         } else if (id == R.id.nav_week) {
             item.setChecked(true);
             saveFragment(AppConst.FRAGMENT_WEEK);
-            if(getThemeFromPrefs().compareTo(AppConst.THEME_DEFAULT)==0){
-                fragment = new WeatherWeekFragment();
-                tag = AppConst.FRAGMENT_WEEK;
-            } else {
-                saveTheme(AppConst.THEME_DEFAULT);
-                restartActivity();
-                return true;
-            }
+            fragment = new WeatherWeekFragment();
+            tag = AppConst.FRAGMENT_WEEK;
         } else if (id == R.id.nav_history) {
             item.setChecked(true);
             saveFragment(AppConst.FRAGMENT_HISTORY);
-            if(getThemeFromPrefs().compareTo(AppConst.THEME_DEFAULT)==0){
-                fragment = new HistoryFragment();
-                tag = AppConst.FRAGMENT_HISTORY;
-            } else {
-                saveTheme(AppConst.THEME_DEFAULT);
-                restartActivity();
-                return true;
-            }
+            fragment = new HistoryFragment();
+            tag = AppConst.FRAGMENT_HISTORY;
         } else if (id == R.id.nav_settings) {
-            item.setChecked(true);
-            saveFragment(AppConst.FRAGMENT_SETTINGS);
-            if(getThemeFromPrefs().compareTo(AppConst.THEME_DEFAULT)==0){
-                fragment = new SettingsFragment();
-                tag = AppConst.FRAGMENT_SETTINGS;
-            } else {
-                saveTheme(AppConst.THEME_DEFAULT);
-                restartActivity();
-                return true;
-            }
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
         }
-
         fragmentManager.beginTransaction()
                 .add(R.id.detail_container, fragment, tag)
                 .commit();
-
         if(!isDrawerLocked) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
     }
-
-    private void restartActivity() {
-        Intent dayIntent = new Intent(MainActivity.this, MainActivity.class);
-        startActivity(dayIntent);
-        finish();
-    }
-
 
 }

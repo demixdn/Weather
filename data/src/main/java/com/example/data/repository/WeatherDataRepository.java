@@ -2,6 +2,7 @@ package com.example.data.repository;
 
 import com.example.data.executor.JobExecutor;
 import com.example.data.model.Weather;
+import com.example.data.model.dao.CityDAO;
 import com.example.data.model.dao.WeatherDAO;
 import com.example.data.repository.local.database.DiskDataSource;
 
@@ -27,16 +28,16 @@ public class WeatherDataRepository implements WeatherDataStore {
 
     @Override
     public Observable<List<Weather>> getWeathersBy(int cityId, int startPeriod, int endPeriod,
-                                                   boolean useRu, boolean useNightIcon, int limit) {
-        return loadByCity(cityId, dataSource, startPeriod, endPeriod, useRu, useNightIcon, limit)
+                                                   boolean useRu, int limit) {
+        return loadByCity(cityId, dataSource, startPeriod, endPeriod, useRu, limit)
                 .subscribeOn(Schedulers.from(JobExecutor.getInstance()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
-    public Observable<List<Weather>> getWeathersBy(int lon, int lat, int startPeriod, int endPeriod,
-                                                   boolean useRu, boolean useNightIcon, int limit) {
-        return loadByCoords(lon, lat, dataSource, startPeriod, endPeriod, useRu, useNightIcon, limit)
+    public Observable<List<Weather>> getWeathersBy(double lon, double lat, int startPeriod, int endPeriod,
+                                                   boolean useRu, int limit) {
+        return loadByCoords(lon, lat, dataSource, startPeriod, endPeriod, useRu, limit)
                 .subscribeOn(Schedulers.from(JobExecutor.getInstance()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -49,6 +50,13 @@ public class WeatherDataRepository implements WeatherDataStore {
     }
 
     @Override
+    public Observable<List<CityDAO>> getAllCities() {
+        return loadAllCities(dataSource)
+                .subscribeOn(Schedulers.from(JobExecutor.getInstance()))
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public Observable<List<WeatherDAO>> getAllWeathers() {
         return loadAll(dataSource)
                 .subscribeOn(Schedulers.from(JobExecutor.getInstance()))
@@ -56,12 +64,12 @@ public class WeatherDataRepository implements WeatherDataStore {
     }
 
     private Observable<List<Weather>> loadByCity(int cityId,  DiskDataSource dataSource, int startPeriod, int endPeriod,
-                                                 boolean useRu, boolean useNightIcon, int limit){
+                                                 boolean useRu, int limit){
         return Observable.create(new Observable.OnSubscribe<List<Weather>>() {
             @Override
             public void call(Subscriber<? super List<Weather>> subscriber) {
                 try {
-                    List<Weather> weathers = dataSource.selectWeatherItemsBy(cityId, startPeriod, endPeriod, useRu, useNightIcon, limit);
+                    List<Weather> weathers = dataSource.selectWeatherItemsBy(cityId, startPeriod, endPeriod, useRu, limit);
                     subscriber.onNext(weathers);
                     subscriber.onCompleted();
                 } catch (Exception e) {
@@ -71,13 +79,13 @@ public class WeatherDataRepository implements WeatherDataStore {
         });
     }
 
-    private Observable<List<Weather>> loadByCoords(int lon, int lat, DiskDataSource dataSource, int startPeriod, int endPeriod,
-                                                 boolean useRu, boolean useNightIcon, int limit){
+    private Observable<List<Weather>> loadByCoords(double lon, double lat, DiskDataSource dataSource, int startPeriod, int endPeriod,
+                                                 boolean useRu, int limit){
         return Observable.create(new Observable.OnSubscribe<List<Weather>>() {
             @Override
             public void call(Subscriber<? super List<Weather>> subscriber) {
                 try {
-                    List<Weather> weathers = dataSource.selectWeatherItemsBy(lon, lat, startPeriod, endPeriod, useRu, useNightIcon, limit);
+                    List<Weather> weathers = dataSource.selectWeatherItemsBy(lon, lat, startPeriod, endPeriod, useRu, limit);
                     subscriber.onNext(weathers);
                     subscriber.onCompleted();
                 } catch (Exception e) {
@@ -109,6 +117,21 @@ public class WeatherDataRepository implements WeatherDataStore {
                 try {
                     List<WeatherDAO> weathers = dataSource.getAll();
                     subscriber.onNext(weathers);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    private Observable<List<CityDAO>> loadAllCities(DiskDataSource dataSource){
+        return Observable.create(new Observable.OnSubscribe<List<CityDAO>>() {
+            @Override
+            public void call(Subscriber<? super List<CityDAO>> subscriber) {
+                try {
+                    List<CityDAO> items = dataSource.getAllCities();
+                    subscriber.onNext(items);
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);

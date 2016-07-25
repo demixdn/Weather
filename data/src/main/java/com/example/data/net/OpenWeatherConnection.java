@@ -28,7 +28,7 @@ public class OpenWeatherConnection {
     }
 
 
-    public Observable<Boolean> forecastByCoords(@Query("lat") String lat, @Query("lon") String lon) {
+    public Observable<List<WeatherDAO>> forecastByCoords(@Query("lat") String lat, @Query("lon") String lon) {
         return apiModule.provideApi()
                 .forecastByCoords(lat, lon, ApiConst.PARAMS.APPID, ApiConst.PARAMS.UNIT_METRICS)
                 .subscribeOn(Schedulers.from(JobExecutor.getInstance()))
@@ -38,7 +38,7 @@ public class OpenWeatherConnection {
     }
 
 
-    public Observable<Boolean> forecastByCityId(@Query("id") String cityId) {
+    public Observable<List<WeatherDAO>> forecastByCityId(@Query("id") String cityId) {
         return apiModule.provideApi().forecastByCityId(cityId, ApiConst.PARAMS.APPID, ApiConst.PARAMS.UNIT_METRICS)
                 .subscribeOn(Schedulers.from(JobExecutor.getInstance()))
                 .flatMap(WeatherMapper::transform)
@@ -46,13 +46,13 @@ public class OpenWeatherConnection {
                 .observeOn(Schedulers.io());
     }
 
-    private Observable<Boolean> saveListToDB(List<WeatherDAO> list){
-        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+    private Observable<List<WeatherDAO>> saveListToDB(List<WeatherDAO> list){
+        return Observable.create(new Observable.OnSubscribe<List<WeatherDAO>>() {
             @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
+            public void call(Subscriber<? super List<WeatherDAO>> subscriber) {
                 try {
                     dataSource.insertListWeatherItems(list);
-                    subscriber.onNext(true);
+                    subscriber.onNext(list);
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);

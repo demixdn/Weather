@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.wheather.view.SettingsActivity"
+    android:background="@color/default_bg">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/scSettingsUploadWifi"
+                android:checked="false"
+                android:text="@string/only_wifi"
+                style="@style/SettingsDataText" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/scSettingsUploadStart"
+                android:checked="true"
+                android:text="@string/update_startup"
+                style="@style/SettingsDataText" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:id="@+id/rlSettingsPeriodContainer"
+                android:background="@drawable/line_top"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:id="@+id/tvSettingsPeriodTitle"
+                    android:text="@string/select_period"
+                    android:textColor="@color/white" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rgSettingsPeriod"
+                    android:layout_below="@+id/tvSettingsPeriodTitle"
+                    android:orientation="vertical"
+                    android:checkedButton="@+id/acrbSettingsPeriod6">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/period_3"
+                        android:id="@+id/acrbSettingsPeriod3"
+                        style="@style/CheckTypeComponent"/>
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/period_6"
+                        android:id="@+id/acrbSettingsPeriod6"
+                        style="@style/CheckTypeComponent"/>
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/period_9"
+                        android:id="@+id/acrbSettingsPeriod9"
+                        style="@style/CheckTypeComponent"/>
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/period_12"
+                        android:id="@+id/acrbSettingsPeriod12"
+                        style="@style/CheckTypeComponent"/>
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/period_24"
+                        android:id="@+id/acrbSettingsPeriod24"
+                        style="@style/CheckTypeComponent"/>
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/period_48"
+                        android:id="@+id/acrbSettingsPeriod48"
+                        style="@style/CheckTypeComponent"/>
+                </RadioGroup>
+            </RelativeLayout>
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/scSettingsAskExit"
+                android:checked="true"
+                android:text="@string/message_on_exit"
+                style="@style/SettingsDataText" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/scSettingsAutoLocation"
+                android:checked="true"
+                android:text="@string/auto_location"
+                style="@style/SettingsDataText" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rlSettingsCityContainer"
+                android:background="@drawable/line_top"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    style="@style/PaddedTextLayout"
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/tilSettingsCity"
+                    app:hintTextAppearance="@style/TextFloatingLabel"
+                    android:orientation="horizontal"
+                    android:layout_toLeftOf="@+id/rlSettingsBtCity"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true">
+                    <requestFocus/>
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:id="@+id/actvSettingsCityEdit"
+                        android:hint="@string/enter_city_name"
+                        style="@style/TilAutoCompleteTextView"
+                        android:textCursorDrawable="@drawable/actv_cursor"
+                        tools:text="@string/enter_city_name"
+                        android:nextFocusUp="@+id/tilSettingsCity"
+                        android:nextFocusDown="@+id/tilSettingsCity"
+                        android:nextFocusForward="@+id/tilSettingsCity"/>
+
+                </android.support.design.widget.TextInputLayout>
+                <RelativeLayout
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:id="@+id/rlSettingsBtCity"
+                    android:layout_alignParentRight="true"
+                    android:visibility="gone">
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_check"
+                        android:id="@+id/imbtSettingsCity"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/transparent" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

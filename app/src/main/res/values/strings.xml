@@ -1,15 +1,37 @@
 <resources>
     <string name="app_name">Weather</string>
+    <string name="lang">en</string>
+    <string name="navigation_drawer_open" translatable="false" />
+    <string name="navigation_drawer_close" translatable="false" />
     <string name="exit_to_app">Exit</string>
     <string name="weather_day">Weather for the day</string>
     <string name="weather_week">Weather for the week</string>
     <string name="weather_history">Weather history</string>
     <string name="settings">Settings</string>
-    <string name="navigation_drawer_open" translatable="false" />
-    <string name="navigation_drawer_close" translatable="false" />
     <string name="title_activity_settings">Settings</string>
     <string name="degree_celsius">%1$s &#8451;</string>
+    <string name="degree_celsius_long">Temperature %1$s &#8451;</string>
     <string name="pressure">Pressure %1$d mm</string>
     <string name="humidity">Humidity %1$d</string>
     <string name="wind">Wind %1$s m/s</string>
+    <string name="loading">Loading…</string>
+    <string name="dialog_exit_text">Close this application?</string>
+    <string name="only_wifi">Update only on WiFi?</string>
+    <string name="update_startup">Update at startup?</string>
+    <string name="select_period">Select the update period:</string>
+    <string name="period_3">3 hours</string>
+    <string name="period_6">6 hours</string>
+    <string name="period_9">9 hours</string>
+    <string name="period_12">12 hours</string>
+    <string name="period_24">24 hours</string>
+    <string name="period_48">48 hours</string>
+    <string name="message_on_exit">Ask on exit?</string>
+    <string name="auto_location">Automatic selection of the location?</string>
+    <string name="enter_city_name">Name of the city</string>
+    <string name="gps_title">GPS settings</string>
+    <string name="gps_text">GPS is not enabled.\n The coordinates need for work or disable automatic location and select a city in the app settings.</string>
+    <string name="gps_settings">GPS enable</string>
+    <string name="app_settings">Settings</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

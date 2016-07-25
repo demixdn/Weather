@@ -63,10 +63,11 @@ public class CityDAO {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CityDAO{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append('}');
-        return sb.toString();
+//        final StringBuilder sb = new StringBuilder("CityDAO{");
+//        sb.append("id=").append(id);
+//        sb.append(", name='").append(name).append('\'');
+//        sb.append('}');
+//        return sb.toString();
+        return String.valueOf(name);
     }
 }
